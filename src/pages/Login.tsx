@@ -13,7 +13,7 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (login(username, password)) {
-      navigate("/home");
+      navigate("/");
     } else {
       setError("Invalid username or password");
     }
@@ -62,7 +62,7 @@ const Login = () => {
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link to="/" className="font-medium text-primary hover:underline">
+            <Link to="/signup" className="font-medium text-primary hover:underline">
               Sign Up
             </Link>
           </p>

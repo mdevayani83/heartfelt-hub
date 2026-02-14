@@ -49,7 +49,7 @@ const HomePage = () => {
         </div>
         <div className="relative px-6 py-20 text-center sm:py-28">
           <h1 className="font-display text-4xl font-bold text-primary-foreground sm:text-5xl">
-            Welcome, {user?.username}!
+            {user ? `Welcome, ${user.username}!` : "Eco Swap Hub"}
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/80">
             Swap, reuse, and reduce waste. Join our community making the planet greener, one item at a time.
