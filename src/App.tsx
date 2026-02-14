@@ -27,9 +27,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const AppRoutes = () => (
   <Layout>
     <Routes>
-      <Route path="/" element={<Signup />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
       <Route path="/seller" element={<ProtectedRoute><Seller /></ProtectedRoute>} />
       <Route path="/buyer" element={<ProtectedRoute><Buyer /></ProtectedRoute>} />
       <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
