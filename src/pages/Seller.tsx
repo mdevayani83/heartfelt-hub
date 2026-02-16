@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { Upload, CheckCircle } from "lucide-react";
 
+const PRODUCT_TYPES = ["Clothing", "Home", "Accessories", "Fitness", "Electronics", "Books", "Free / Donate"];
+
 const Seller = () => {
   const { addProduct } = useApp();
   const navigate = useNavigate();
@@ -10,6 +12,8 @@ const Seller = () => {
   const [form, setForm] = useState({
     name: "", type: "", size: "", quality: "", price: "", company: "", image: "",
   });
+
+  const isDonation = form.type === "Free / Donate";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -26,7 +30,7 @@ const Seller = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addProduct(form);
+    addProduct({ ...form, price: isDonation ? "0" : form.price });
     setSubmitted(true);
     setTimeout(() => navigate("/buyer"), 1500);
   };
@@ -44,19 +48,17 @@ const Seller = () => {
   }
 
   const fields = [
-    { name: "name", label: "Product Name", placeholder: "e.g. Cotton T-Shirt" },
-    { name: "type", label: "Product Type", placeholder: "e.g. Clothing" },
-    { name: "size", label: "Size", placeholder: "e.g. M, L, 32" },
-    { name: "quality", label: "Quality", placeholder: "e.g. Good, Like New" },
-    { name: "price", label: "Price (₹)", placeholder: "e.g. 500" },
-    { name: "company", label: "Brand / Company", placeholder: "e.g. EcoWear" },
+    { name: "name", label: "Product Name", placeholder: "e.g. Cotton T-Shirt", type: "input" },
+    { name: "size", label: "Size", placeholder: "e.g. M, L, 32", type: "input" },
+    { name: "quality", label: "Quality", placeholder: "e.g. Good, Like New", type: "input" },
+    { name: "company", label: "Brand / Company", placeholder: "e.g. EcoWear", type: "input" },
   ];
 
   return (
     <div className="mx-auto max-w-2xl animate-fade-in">
       <div className="mb-6">
         <h1 className="font-display text-3xl font-bold text-foreground">Upload Product</h1>
-        <p className="mt-1 text-muted-foreground">List an item for others to swap or purchase</p>
+        <p className="mt-1 text-muted-foreground">List an item for others to swap, purchase, or donate</p>
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-soft">
@@ -75,7 +77,45 @@ const Seller = () => {
                 />
               </div>
             ))}
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">Product Type</label>
+              <select
+                name="type"
+                value={form.type}
+                onChange={handleChange}
+                required
+                className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">Select type...</option>
+                {PRODUCT_TYPES.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+
+            {!isDonation && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-foreground">Price (₹)</label>
+                <input
+                  name="price"
+                  value={form.price}
+                  onChange={handleChange}
+                  placeholder="e.g. 500"
+                  required={!isDonation}
+                  type="number"
+                  min="1"
+                  className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            )}
           </div>
+
+          {isDonation && (
+            <div className="rounded-lg bg-primary/10 p-3 text-sm text-primary">
+              🎁 This item will be listed for free in the Donations section
+            </div>
+          )}
 
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Product Image</label>
@@ -90,7 +130,7 @@ const Seller = () => {
             type="submit"
             className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
           >
-            List Product
+            {isDonation ? "List as Donation" : "List Product"}
           </button>
         </form>
       </div>

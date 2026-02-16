@@ -14,6 +14,13 @@ import ProductDetail from "@/pages/ProductDetail";
 import Buy from "@/pages/Buy";
 import SearchPage from "@/pages/SearchPage";
 import About from "@/pages/About";
+import CartPage from "@/pages/CartPage";
+import BuyerDashboard from "@/pages/BuyerDashboard";
+import SellerDashboard from "@/pages/SellerDashboard";
+import DonationsPage from "@/pages/DonationsPage";
+import ChatPage from "@/pages/ChatPage";
+import PaymentPage from "@/pages/PaymentPage";
+import NotificationsPage from "@/pages/NotificationsPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +43,13 @@ const AppRoutes = () => (
       <Route path="/buy/:id" element={<ProtectedRoute><Buy /></ProtectedRoute>} />
       <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
       <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+      <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
+      <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+      <Route path="/seller-dashboard" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
+      <Route path="/donations" element={<ProtectedRoute><DonationsPage /></ProtectedRoute>} />
+      <Route path="/chat/:recipientId/:productId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+      <Route path="/payment/:orderId" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </Layout>
