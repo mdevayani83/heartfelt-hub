@@ -1,33 +1,15 @@
 import { Link } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
-import { Upload, ShoppingBag, Search, Info, Leaf, Recycle, Heart } from "lucide-react";
+import { Upload, ShoppingBag, Search, Info, Leaf, Recycle, Heart, LayoutDashboard, ShoppingCart } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const features = [
-  {
-    to: "/seller",
-    icon: Upload,
-    title: "Sell Items",
-    desc: "List your unused items for others to swap or buy",
-  },
-  {
-    to: "/buyer",
-    icon: ShoppingBag,
-    title: "Browse Items",
-    desc: "Discover affordable pre-loved products nearby",
-  },
-  {
-    to: "/search",
-    icon: Search,
-    title: "Search",
-    desc: "Find exactly what you need quickly",
-  },
-  {
-    to: "/about",
-    icon: Info,
-    title: "About Us",
-    desc: "Learn about our mission for sustainability",
-  },
+  { to: "/seller", icon: Upload, title: "Sell Items", desc: "List your unused items for others to swap or buy" },
+  { to: "/buyer", icon: ShoppingBag, title: "Browse Items", desc: "Discover affordable pre-loved products nearby" },
+  { to: "/donations", icon: Heart, title: "Donations", desc: "Give away items or request free items in need" },
+  { to: "/search", icon: Search, title: "Search", desc: "Find exactly what you need quickly" },
+  { to: "/buyer-dashboard", icon: LayoutDashboard, title: "Buyer Dashboard", desc: "Track orders, cart, messages & donations" },
+  { to: "/seller-dashboard", icon: ShoppingCart, title: "Seller Dashboard", desc: "Manage products, orders & incoming requests" },
 ];
 
 const stats = [
