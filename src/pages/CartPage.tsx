@@ -1,22 +1,24 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { ShoppingCart, Trash2, Package } from "lucide-react";
 
 const CartPage = () => {
-  const { user, cart, products, removeFromCart, clearCart, placeOrder } = useApp();
+  const { user, cart, products, removeFromCart, clearCart, createPurchaseRequest } = useApp();
   const navigate = useNavigate();
   const userCart = cart.filter((c) => c.userId === user?.username);
+  const [paymentMode, setPaymentMode] = useState<"UPI" | "Cash on Delivery">("Cash on Delivery");
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const getProduct = (productId: number) => products.find((p) => p.id === productId);
-
   const total = userCart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
 
   const handleCheckout = () => {
     userCart.forEach((item) => {
-      const order = placeOrder(item.productId, item.quantity);
-      navigate(`/payment/${order.id}`);
+      createPurchaseRequest(item.productId, item.quantity, paymentMode);
     });
     clearCart();
+    navigate("/buyer-dashboard");
   };
 
   if (userCart.length === 0) {
@@ -25,9 +27,7 @@ const CartPage = () => {
         <Package className="mb-4 h-16 w-16 text-muted-foreground/40" />
         <h2 className="font-display text-2xl font-bold text-foreground">Your cart is empty</h2>
         <p className="mt-2 text-muted-foreground">Browse items and add them to your cart</p>
-        <Link to="/buyer" className="mt-4 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground">
-          Browse Items
-        </Link>
+        <Link to="/buyer" className="mt-4 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground">Browse Items</Link>
       </div>
     );
   }
@@ -75,12 +75,31 @@ const CartPage = () => {
           <span className="text-lg font-medium text-foreground">Total</span>
           <span className="text-2xl font-bold text-primary">₹{total}</span>
         </div>
-        <button
-          onClick={handleCheckout}
-          className="mt-4 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
-        >
-          Proceed to Checkout
-        </button>
+
+        {!showCheckout ? (
+          <button onClick={() => setShowCheckout(true)}
+            className="mt-4 w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]">
+            Proceed to Checkout
+          </button>
+        ) : (
+          <div className="mt-4 space-y-3 animate-fade-in">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">Payment Mode</label>
+              <select value={paymentMode} onChange={(e) => setPaymentMode(e.target.value as any)}
+                className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                <option value="Cash on Delivery">Cash on Delivery (In-person)</option>
+                <option value="UPI">UPI</option>
+              </select>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              No online payment required. A purchase request will be sent to the seller(s). Payment happens offline ({paymentMode}).
+            </p>
+            <button onClick={handleCheckout}
+              className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]">
+              Send Purchase Request
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

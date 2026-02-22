@@ -1,9 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
-import { Leaf, LogOut, ShoppingBag, Upload, Search, Info, Home, ShoppingCart, LayoutDashboard, Bell, Heart } from "lucide-react";
+import { Leaf, LogOut, ShoppingBag, Upload, Search, Info, Home, ShoppingCart, LayoutDashboard, Bell, Heart, ArrowLeftRight } from "lucide-react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { user, logout, getUnreadNotificationCount, cart } = useApp();
+  const { user, logout, getUnreadNotificationCount, cart, switchRole } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -12,12 +12,20 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const unreadCount = getUnreadNotificationCount();
   const cartCount = user ? cart.filter((c) => c.userId === user.username).length : 0;
+  const isSeller = user?.activeRole === "seller";
 
   const navItems = [
     { to: "/", label: "Home", icon: Home },
-    { to: "/seller", label: "Sell", icon: Upload },
-    { to: "/buyer", label: "Browse", icon: ShoppingBag },
-    { to: "/donations", label: "Donate", icon: Heart },
+    ...(isSeller
+      ? [
+          { to: "/seller", label: "Add Product", icon: Upload },
+          { to: "/seller-dashboard", label: "Dashboard", icon: LayoutDashboard },
+        ]
+      : [
+          { to: "/buyer", label: "Browse", icon: ShoppingBag },
+          { to: "/buyer-dashboard", label: "Dashboard", icon: LayoutDashboard },
+          { to: "/donations", label: "Donate", icon: Heart },
+        ]),
     { to: "/search", label: "Search", icon: Search },
     { to: "/about", label: "About", icon: Info },
   ];
@@ -35,9 +43,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
               <Leaf className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-display text-xl font-bold text-foreground">
-              Eco Swap Hub
-            </span>
+            <span className="font-display text-xl font-bold text-foreground">Eco Swap Hub</span>
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">
@@ -48,9 +54,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   key={item.to}
                   to={item.to}
                   className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    active
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
                 >
                   <item.icon className="h-4 w-4" />
@@ -63,14 +67,27 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="flex items-center gap-2">
             {user ? (
               <>
-                <Link to="/cart" className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartCount > 0 && (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
+                {/* Role toggle */}
+                <button
+                  onClick={switchRole}
+                  className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-secondary"
+                  title="Switch role"
+                >
+                  <ArrowLeftRight className="h-3.5 w-3.5 text-primary" />
+                  <span className="hidden sm:inline text-foreground">{isSeller ? "Seller" : "Buyer"}</span>
+                </button>
+
+                {!isSeller && (
+                  <Link to="/cart" className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartCount > 0 && (
+                      <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
                 <Link to="/notifications" className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
                   <Bell className="h-5 w-5" />
                   {unreadCount > 0 && (
@@ -79,14 +96,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     </span>
                   )}
                 </Link>
-                <div className="hidden items-center gap-1 sm:flex">
-                  <Link to="/buyer-dashboard" className="rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
-                    <LayoutDashboard className="mr-1 inline h-3.5 w-3.5" />Buyer
-                  </Link>
-                  <Link to="/seller-dashboard" className="rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
-                    <LayoutDashboard className="mr-1 inline h-3.5 w-3.5" />Seller
-                  </Link>
-                </div>
+
                 <span className="hidden text-sm text-muted-foreground lg:inline">
                   Hi, <span className="font-semibold text-foreground">{user.username}</span>
                 </span>
@@ -128,13 +138,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </Link>
             );
           })}
-          {user && (
-            <>
-              <Link to="/buyer-dashboard" className="flex shrink-0 items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary">
-                <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
-              </Link>
-            </>
-          )}
         </nav>
       </header>
 

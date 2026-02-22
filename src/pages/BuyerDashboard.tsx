@@ -1,19 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
-import { ShoppingCart, Package, MessageCircle, Heart, Clock, CheckCircle, Truck, Box } from "lucide-react";
+import { ShoppingCart, Package, MessageCircle, Heart, Clock, CheckCircle, Truck, Box, Send } from "lucide-react";
 
 const statusIcons: Record<string, any> = {
-  Requested: Clock,
-  Confirmed: CheckCircle,
-  Shipped: Truck,
-  Delivered: Box,
+  Requested: Clock, Confirmed: CheckCircle, Shipped: Truck, Delivered: Box,
 };
 
 const BuyerDashboard = () => {
-  const { user, orders, products, messages, donationRequests, cart } = useApp();
-  const [tab, setTab] = useState<"orders" | "cart" | "messages" | "donations">("orders");
+  const { user, orders, products, messages, donationRequests, purchaseRequests, cart } = useApp();
+  const [tab, setTab] = useState<"requests" | "orders" | "cart" | "messages" | "donations">("requests");
 
+  const myRequests = purchaseRequests.filter((r) => r.buyerId === user?.username);
   const myOrders = orders.filter((o) => o.buyerId === user?.username);
   const myCart = cart.filter((c) => c.userId === user?.username);
   const myMessages = messages.filter((m) => m.senderId === user?.username || m.receiverId === user?.username);
@@ -22,6 +20,7 @@ const BuyerDashboard = () => {
   const getProduct = (id: number) => products.find((p) => p.id === id);
 
   const tabs = [
+    { key: "requests", label: "Buy Requests", icon: Send, count: myRequests.length },
     { key: "orders", label: "Orders", icon: Package, count: myOrders.length },
     { key: "cart", label: "Cart", icon: ShoppingCart, count: myCart.length },
     { key: "messages", label: "Messages", icon: MessageCircle, count: myMessages.length },
@@ -34,13 +33,10 @@ const BuyerDashboard = () => {
 
       <div className="mb-6 flex gap-2 overflow-x-auto">
         {tabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+          <button key={t.key} onClick={() => setTab(t.key)}
             className={`flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
               tab === t.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-primary/10"
-            }`}
-          >
+            }`}>
             <t.icon className="h-4 w-4" />
             {t.label}
             {t.count > 0 && (
@@ -52,6 +48,43 @@ const BuyerDashboard = () => {
         ))}
       </div>
 
+      {/* Purchase Requests */}
+      {tab === "requests" && (
+        <div className="space-y-3">
+          {myRequests.length === 0 ? (
+            <p className="py-12 text-center text-muted-foreground">No purchase requests. <Link to="/buyer" className="text-primary hover:underline">Browse items</Link></p>
+          ) : (
+            myRequests.map((req) => {
+              const product = getProduct(req.productId);
+              return (
+                <div key={req.id} className="rounded-xl border border-border bg-card p-4 shadow-soft">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-display font-semibold text-foreground">{product?.name || "Unknown"}</h3>
+                      <p className="text-sm text-muted-foreground">Seller: {req.sellerId} · Qty: {req.quantity} · {req.paymentMode}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(req.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-lg font-bold text-primary">₹{req.totalPrice}</span>
+                      <span className={`ml-2 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        req.status === "Approved" ? "bg-primary/10 text-primary" :
+                        req.status === "Rejected" ? "bg-destructive/10 text-destructive" :
+                        req.status === "Completed" ? "bg-primary/10 text-primary" :
+                        "bg-accent/10 text-accent-foreground"
+                      }`}>{req.status}</span>
+                    </div>
+                  </div>
+                  {req.status === "Approved" && (
+                    <p className="mt-2 text-sm text-primary">✅ Approved! View the product page for seller contact details.</p>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {/* Orders */}
       {tab === "orders" && (
         <div className="space-y-3">
           {myOrders.length === 0 ? (
@@ -76,24 +109,15 @@ const BuyerDashboard = () => {
                     </div>
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                       order.paymentStatus === "Paid" ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent-foreground"
-                    }`}>
-                      {order.paymentStatus}
-                    </span>
+                    }`}>{order.paymentStatus}</span>
                     {order.paymentStatus === "Pending" && (
                       <Link to={`/payment/${order.id}`} className="text-sm font-medium text-primary hover:underline">Pay Now</Link>
                     )}
                   </div>
-                  {/* Status tracker */}
                   <div className="mt-4 flex items-center gap-1">
                     {["Requested", "Confirmed", "Shipped", "Delivered"].map((s, i) => {
-                      const steps = ["Requested", "Confirmed", "Shipped", "Delivered"];
-                      const currentIdx = steps.indexOf(order.status);
-                      const active = i <= currentIdx;
-                      return (
-                        <div key={s} className="flex flex-1 items-center gap-1">
-                          <div className={`h-2 flex-1 rounded-full ${active ? "bg-primary" : "bg-border"}`} />
-                        </div>
-                      );
+                      const currentIdx = ["Requested", "Confirmed", "Shipped", "Delivered"].indexOf(order.status);
+                      return <div key={s} className={`h-2 flex-1 rounded-full ${i <= currentIdx ? "bg-primary" : "bg-border"}`} />;
                     })}
                   </div>
                   <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
@@ -137,9 +161,7 @@ const BuyerDashboard = () => {
                   <p className="mt-1 text-sm text-muted-foreground">Re: {product?.name || "Product"}</p>
                   <p className="mt-2 text-foreground">{msg.message}</p>
                   {!isSent && (
-                    <Link to={`/chat/${msg.senderId}/${msg.productId}`} className="mt-2 inline-block text-sm font-medium text-primary hover:underline">
-                      Reply
-                    </Link>
+                    <Link to={`/chat/${msg.senderId}/${msg.productId}`} className="mt-2 inline-block text-sm font-medium text-primary hover:underline">Reply</Link>
                   )}
                 </div>
               );
@@ -161,9 +183,7 @@ const BuyerDashboard = () => {
                   <p className="mt-1 text-sm text-muted-foreground">{d.message}</p>
                   <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
                     d.status === "Approved" ? "bg-primary/10 text-primary" : d.status === "Rejected" ? "bg-destructive/10 text-destructive" : "bg-accent/10 text-accent-foreground"
-                  }`}>
-                    {d.status}
-                  </span>
+                  }`}>{d.status}</span>
                 </div>
               );
             })

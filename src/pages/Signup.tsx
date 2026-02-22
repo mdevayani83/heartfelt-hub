@@ -6,17 +6,22 @@ import { Leaf } from "lucide-react";
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
   const [error, setError] = useState("");
   const { signup } = useApp();
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password) {
+    if (!username || !password || !contactNumber) {
       setError("Please fill in all fields");
       return;
     }
-    if (signup(username, password)) {
+    if (contactNumber.length < 10) {
+      setError("Please enter a valid contact number");
+      return;
+    }
+    if (signup(username, password, contactNumber)) {
       navigate("/login");
     } else {
       setError("Username already exists");
@@ -44,6 +49,16 @@ const Signup = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="Choose a username"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">Contact Number</label>
+              <input
+                value={contactNumber}
+                onChange={(e) => setContactNumber(e.target.value)}
+                className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                placeholder="Enter your phone number"
+                type="tel"
               />
             </div>
             <div>
