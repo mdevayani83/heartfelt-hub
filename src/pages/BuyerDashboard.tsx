@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
-import { ShoppingCart, Package, MessageCircle, Heart, Clock, CheckCircle, Truck, Box, Send } from "lucide-react";
+import { ShoppingCart, Package, MessageCircle, Heart, Clock, CheckCircle, Truck, Box, Send, Smartphone, Banknote } from "lucide-react";
 
 const statusIcons: Record<string, any> = {
   Requested: Clock, Confirmed: CheckCircle, Shipped: Truck, Delivered: Box,
 };
 
 const BuyerDashboard = () => {
-  const { user, orders, products, messages, donationRequests, purchaseRequests, cart } = useApp();
+  const { user, orders, products, messages, donationRequests, purchaseRequests, cart, updatePurchaseRequestStatus, placeOrder } = useApp();
   const [tab, setTab] = useState<"requests" | "orders" | "cart" | "messages" | "donations">("requests");
+  const [payingRequestId, setPayingRequestId] = useState<number | null>(null);
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState<"UPI" | "Cash on Delivery">("Cash on Delivery");
+  const [successRequestId, setSuccessRequestId] = useState<number | null>(null);
 
   const myRequests = purchaseRequests.filter((r) => r.buyerId === user?.username);
   const myOrders = orders.filter((o) => o.buyerId === user?.username);
@@ -19,6 +22,14 @@ const BuyerDashboard = () => {
 
   const getProduct = (id: number) => products.find((p) => p.id === id);
 
+  const handleConfirmPayment = (req: typeof myRequests[0]) => {
+    // Create an order with the selected payment mode
+    placeOrder(req.productId, req.quantity);
+    updatePurchaseRequestStatus(req.id, "Completed");
+    setPayingRequestId(null);
+    setSuccessRequestId(req.id);
+    setTimeout(() => setSuccessRequestId(null), 4000);
+  };
   const tabs = [
     { key: "requests", label: "Buy Requests", icon: Send, count: myRequests.length },
     { key: "orders", label: "Orders", icon: Package, count: myOrders.length },
@@ -74,8 +85,47 @@ const BuyerDashboard = () => {
                       }`}>{req.status}</span>
                     </div>
                   </div>
-                  {req.status === "Approved" && (
-                    <p className="mt-2 text-sm text-primary">✅ Approved! View the product page for seller contact details.</p>
+                  {req.status === "Approved" && payingRequestId !== req.id && successRequestId !== req.id && (
+                    <div className="mt-3">
+                      <button onClick={() => { setPayingRequestId(req.id); setSelectedPaymentMode("Cash on Delivery"); }}
+                        className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]">
+                        Proceed to Payment
+                      </button>
+                    </div>
+                  )}
+                  {req.status === "Approved" && payingRequestId === req.id && (
+                    <div className="mt-4 space-y-3 rounded-lg border border-primary/20 bg-secondary/50 p-4 animate-fade-in">
+                      <h4 className="font-display font-semibold text-foreground">Select Payment Mode</h4>
+                      <label className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${selectedPaymentMode === "Cash on Delivery" ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}>
+                        <input type="radio" name="payMode" value="Cash on Delivery" checked={selectedPaymentMode === "Cash on Delivery"} onChange={() => setSelectedPaymentMode("Cash on Delivery")} className="accent-primary" />
+                        <Banknote className="h-5 w-5 text-primary" />
+                        <span className="font-medium text-foreground">Cash on Delivery (In-person)</span>
+                      </label>
+                      <label className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${selectedPaymentMode === "UPI" ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}>
+                        <input type="radio" name="payMode" value="UPI" checked={selectedPaymentMode === "UPI"} onChange={() => setSelectedPaymentMode("UPI")} className="accent-primary" />
+                        <Smartphone className="h-5 w-5 text-primary" />
+                        <span className="font-medium text-foreground">Pay via UPI</span>
+                      </label>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleConfirmPayment(req)}
+                          className="flex-1 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]">
+                          Confirm & Place Order
+                        </button>
+                        <button onClick={() => setPayingRequestId(null)}
+                          className="rounded-lg bg-secondary px-4 py-2.5 text-sm font-semibold text-secondary-foreground">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {successRequestId === req.id && (
+                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-primary/10 p-4 animate-fade-in">
+                      <CheckCircle className="h-5 w-5 text-primary" />
+                      <span className="text-sm font-semibold text-primary">Order placed successfully! Payment mode: {selectedPaymentMode}. Track it in the Orders tab.</span>
+                    </div>
+                  )}
+                  {req.status === "Completed" && successRequestId !== req.id && (
+                    <p className="mt-2 text-sm text-primary">✅ Order placed. Check the Orders tab for tracking.</p>
                   )}
                 </div>
               );
