@@ -18,15 +18,6 @@ const BuyerDashboard = () => {
   const myDonations = donationRequests.filter((d) => d.requesterId === user?.username);
 
   const getProduct = (id: number) => products.find((p) => p.id === id);
-
-  const handleConfirmPayment = (req: typeof myRequests[0]) => {
-    // Create an order with the selected payment mode
-    placeOrder(req.productId, req.quantity);
-    updatePurchaseRequestStatus(req.id, "Completed");
-    setPayingRequestId(null);
-    setSuccessRequestId(req.id);
-    setTimeout(() => setSuccessRequestId(null), 4000);
-  };
   const tabs = [
     { key: "requests", label: "My Orders", icon: Send, count: myRequests.length },
     { key: "orders", label: "Orders", icon: Package, count: myOrders.length },
