@@ -5,7 +5,7 @@ import { Package, ShoppingBag, MessageCircle, Heart, Clock, CheckCircle, Truck, 
 
 const SellerDashboard = () => {
   const { user, products, orders, messages, donationRequests, purchaseRequests, updateOrderStatus, updateDonationStatus, updatePurchaseRequestStatus, editProduct, deleteProduct, markProductSold } = useApp();
-  const [tab, setTab] = useState<"products" | "requests" | "orders" | "messages" | "donations">("requests");
+  const [tab, setTab] = useState<"products" | "requests" | "orders" | "messages" | "donations">("orders");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<any>({});
 
@@ -17,7 +17,7 @@ const SellerDashboard = () => {
 
   const getProduct = (id: number) => products.find((p) => p.id === id);
 
-  const statusFlow: Array<"Requested" | "Confirmed" | "Shipped" | "Delivered"> = ["Requested", "Confirmed", "Shipped", "Delivered"];
+  const statusFlow: Array<"Placed" | "Confirmed" | "Shipped" | "Delivered"> = ["Placed", "Confirmed", "Shipped", "Delivered"];
   const nextStatus = (current: string) => {
     const idx = statusFlow.indexOf(current as any);
     return idx < statusFlow.length - 1 ? statusFlow[idx + 1] : null;
@@ -36,8 +36,8 @@ const SellerDashboard = () => {
   };
 
   const tabs = [
-    { key: "requests", label: "Buy Requests", icon: Send, count: myRequests.filter((r) => r.status === "Pending").length },
     { key: "orders", label: "Orders", icon: Package, count: myOrders.length },
+    { key: "requests", label: "Buy Requests", icon: Send, count: myRequests.filter((r) => r.status === "Pending").length },
     { key: "products", label: "Products", icon: ShoppingBag, count: myProducts.length },
     { key: "messages", label: "Messages", icon: MessageCircle, count: myMessages.length },
     { key: "donations", label: "Donations", icon: Heart, count: myDonations.length },
@@ -126,7 +126,8 @@ const SellerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-display font-semibold text-foreground">{product?.name || "Unknown"}</h3>
-                      <p className="text-sm text-muted-foreground">Buyer: {order.buyerId} · #{order.id}</p>
+                      <p className="text-sm text-muted-foreground">Buyer: {order.buyerId} · #{order.id} · Qty: {order.quantity}</p>
+                      <p className="text-xs text-muted-foreground">Payment: {order.paymentMode} · {new Date(order.createdAt).toLocaleDateString()}</p>
                     </div>
                     <span className="text-lg font-bold text-primary">₹{order.totalPrice}</span>
                   </div>
