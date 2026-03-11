@@ -119,7 +119,7 @@ interface AppContextType {
   clearCart: () => void;
   createPurchaseRequest: (productId: number, quantity: number, paymentMode: "UPI" | "Cash on Delivery") => PurchaseRequest;
   updatePurchaseRequestStatus: (requestId: number, status: PurchaseRequest["status"]) => void;
-  placeOrder: (productId: number, quantity: number) => Order;
+  placeOrder: (productId: number, quantity: number, paymentMode: "UPI" | "Cash on Delivery") => Order;
   updateOrderStatus: (orderId: number, status: Order["status"]) => void;
   sendMessage: (receiverId: string, productId: number, message: string) => void;
   requestDonation: (productId: number, message: string) => void;
