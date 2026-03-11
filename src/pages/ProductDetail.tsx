@@ -105,7 +105,7 @@ const ProductDetail = () => {
           {/* Request success */}
           {requested && (
             <div className="mt-4 rounded-lg bg-primary/10 p-4 text-sm text-primary">
-              ✅ Purchase request sent! The seller will review it. You can track it in your dashboard.
+              ✅ Order placed successfully! Payment mode: {paymentMode}. You can track it in your dashboard.
             </div>
           )}
 
