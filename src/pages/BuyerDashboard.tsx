@@ -31,7 +31,7 @@ const BuyerDashboard = () => {
     setTimeout(() => setSuccessRequestId(null), 4000);
   };
   const tabs = [
-    { key: "requests", label: "Buy Requests", icon: Send, count: myRequests.length },
+    { key: "requests", label: "My Orders", icon: Send, count: myRequests.length },
     { key: "orders", label: "Orders", icon: Package, count: myOrders.length },
     { key: "cart", label: "Cart", icon: ShoppingCart, count: myCart.length },
     { key: "messages", label: "Messages", icon: MessageCircle, count: myMessages.length },
