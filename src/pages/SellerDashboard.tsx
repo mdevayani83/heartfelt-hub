@@ -17,7 +17,7 @@ const SellerDashboard = () => {
 
   const getProduct = (id: number) => products.find((p) => p.id === id);
 
-  const statusFlow: Array<"Requested" | "Confirmed" | "Shipped" | "Delivered"> = ["Requested", "Confirmed", "Shipped", "Delivered"];
+  const statusFlow: Array<"Placed" | "Confirmed" | "Shipped" | "Delivered"> = ["Placed", "Confirmed", "Shipped", "Delivered"];
   const nextStatus = (current: string) => {
     const idx = statusFlow.indexOf(current as any);
     return idx < statusFlow.length - 1 ? statusFlow[idx + 1] : null;
