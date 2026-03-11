@@ -5,7 +5,7 @@ import { ArrowLeft, ShoppingBag, ShoppingCart, MessageCircle, Phone, Send } from
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { products, user, addToCart, createPurchaseRequest, getSellerContact } = useApp();
+  const { products, user, addToCart, createPurchaseRequest, placeOrder, getSellerContact } = useApp();
   const navigate = useNavigate();
   const product = products.find((p) => p.id === Number(id));
   const [showRequestForm, setShowRequestForm] = useState(false);
@@ -41,8 +41,9 @@ const ProductDetail = () => {
     navigate("/cart");
   };
 
-  const handleRequest = () => {
+  const handleBuyNow = () => {
     createPurchaseRequest(product.id, quantity, paymentMode);
+    placeOrder(product.id, quantity);
     setRequested(true);
     setShowRequestForm(false);
   };
@@ -104,7 +105,7 @@ const ProductDetail = () => {
           {/* Request success */}
           {requested && (
             <div className="mt-4 rounded-lg bg-primary/10 p-4 text-sm text-primary">
-              ✅ Purchase request sent! The seller will review it. You can track it in your dashboard.
+              ✅ Order placed successfully! Payment mode: {paymentMode}. You can track it in your dashboard.
             </div>
           )}
 
@@ -123,7 +124,7 @@ const ProductDetail = () => {
                   </button>
                   <button onClick={() => setShowRequestForm(!showRequestForm)}
                     className="flex-1 rounded-lg border border-primary bg-primary/5 px-4 py-3 text-center text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground">
-                    <Send className="mr-1 inline h-4 w-4" /> Request to Buy
+                    <Send className="mr-1 inline h-4 w-4" /> Buy Now
                   </button>
                 </>
               )}
@@ -158,9 +159,9 @@ const ProductDetail = () => {
                   <span className="text-sm text-muted-foreground">Total</span>
                   <span className="text-lg font-bold text-primary">₹{Number(product.price) * quantity}</span>
                 </div>
-                <button onClick={handleRequest}
+                <button onClick={handleBuyNow}
                   className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90">
-                  Send Request
+                  Buy Now
                 </button>
               </div>
             </div>
