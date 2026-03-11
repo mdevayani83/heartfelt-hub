@@ -42,9 +42,8 @@ export interface Order {
   productId: number;
   buyerId: string;
   sellerId: string;
-  status: "Placed" | "Confirmed" | "Shipped" | "Delivered";
+  status: "Requested" | "Confirmed" | "Shipped" | "Delivered";
   paymentStatus: "Pending" | "Paid";
-  paymentMode: "UPI" | "Cash on Delivery";
   quantity: number;
   totalPrice: string;
   createdAt: string;
@@ -119,7 +118,7 @@ interface AppContextType {
   clearCart: () => void;
   createPurchaseRequest: (productId: number, quantity: number, paymentMode: "UPI" | "Cash on Delivery") => PurchaseRequest;
   updatePurchaseRequestStatus: (requestId: number, status: PurchaseRequest["status"]) => void;
-  placeOrder: (productId: number, quantity: number, paymentMode: "UPI" | "Cash on Delivery") => Order;
+  placeOrder: (productId: number, quantity: number) => Order;
   updateOrderStatus: (orderId: number, status: Order["status"]) => void;
   sendMessage: (receiverId: string, productId: number, message: string) => void;
   requestDonation: (productId: number, message: string) => void;
@@ -291,22 +290,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const placeOrder = (productId: number, quantity: number, paymentMode: "UPI" | "Cash on Delivery"): Order => {
+  const placeOrder = (productId: number, quantity: number): Order => {
     const product = products.find((p) => p.id === productId)!;
     const order: Order = {
       id: Date.now(),
       productId,
       buyerId: user?.username || "anonymous",
       sellerId: product.seller,
-      status: "Placed",
+      status: "Requested",
       paymentStatus: "Pending",
-      paymentMode,
       quantity,
       totalPrice: String(Number(product.price) * quantity),
       createdAt: new Date().toISOString(),
     };
     setOrders((prev) => [...prev, order]);
-    addNotification(product.seller, `New order received for "${product.name}" from ${user?.username} — Payment: ${paymentMode}`, "order");
+    addNotification(product.seller, `New order for "${product.name}" from ${user?.username}`, "order");
     return order;
   };
 

@@ -4,7 +4,7 @@ import { useApp } from "@/context/AppContext";
 import { ShoppingCart, Trash2, Package } from "lucide-react";
 
 const CartPage = () => {
-  const { user, cart, products, removeFromCart, clearCart, placeOrder } = useApp();
+  const { user, cart, products, removeFromCart, clearCart, createPurchaseRequest } = useApp();
   const navigate = useNavigate();
   const userCart = cart.filter((c) => c.userId === user?.username);
   const [paymentMode, setPaymentMode] = useState<"UPI" | "Cash on Delivery">("Cash on Delivery");
@@ -15,7 +15,7 @@ const CartPage = () => {
 
   const handleCheckout = () => {
     userCart.forEach((item) => {
-      placeOrder(item.productId, item.quantity, paymentMode);
+      createPurchaseRequest(item.productId, item.quantity, paymentMode);
     });
     clearCart();
     navigate("/buyer-dashboard");
