@@ -124,7 +124,7 @@ const ProductDetail = () => {
                   </button>
                   <button onClick={() => setShowRequestForm(!showRequestForm)}
                     className="flex-1 rounded-lg border border-primary bg-primary/5 px-4 py-3 text-center text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground">
-                    <Send className="mr-1 inline h-4 w-4" /> Request to Buy
+                    <Send className="mr-1 inline h-4 w-4" /> Buy Now
                   </button>
                 </>
               )}
