@@ -41,8 +41,9 @@ const ProductDetail = () => {
     navigate("/cart");
   };
 
-  const handleRequest = () => {
+  const handleBuyNow = () => {
     createPurchaseRequest(product.id, quantity, paymentMode);
+    placeOrder(product.id, quantity);
     setRequested(true);
     setShowRequestForm(false);
   };
