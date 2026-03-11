@@ -8,11 +8,8 @@ const statusIcons: Record<string, any> = {
 };
 
 const BuyerDashboard = () => {
-  const { user, orders, products, messages, donationRequests, purchaseRequests, cart, updatePurchaseRequestStatus, placeOrder } = useApp();
+  const { user, orders, products, messages, donationRequests, purchaseRequests, cart } = useApp();
   const [tab, setTab] = useState<"requests" | "orders" | "cart" | "messages" | "donations">("requests");
-  const [payingRequestId, setPayingRequestId] = useState<number | null>(null);
-  const [selectedPaymentMode, setSelectedPaymentMode] = useState<"UPI" | "Cash on Delivery">("Cash on Delivery");
-  const [successRequestId, setSuccessRequestId] = useState<number | null>(null);
 
   const myRequests = purchaseRequests.filter((r) => r.buyerId === user?.username);
   const myOrders = orders.filter((o) => o.buyerId === user?.username);
