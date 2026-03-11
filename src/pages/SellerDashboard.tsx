@@ -64,11 +64,11 @@ const SellerDashboard = () => {
         ))}
       </div>
 
-      {/* Buy Requests */}
+      {/* Orders Arrived */}
       {tab === "requests" && (
         <div className="space-y-3">
           {myRequests.length === 0 ? (
-            <p className="py-12 text-center text-muted-foreground">No purchase requests yet</p>
+            <p className="py-12 text-center text-muted-foreground">No orders arrived yet</p>
           ) : (
             myRequests.map((req) => {
               const product = getProduct(req.productId);
@@ -77,34 +77,19 @@ const SellerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-display font-semibold text-foreground">{product?.name || "Unknown"}</h3>
-                      <p className="text-sm text-muted-foreground">Buyer: {req.buyerId} · Qty: {req.quantity} · {req.paymentMode}</p>
+                      <p className="text-sm text-muted-foreground">Buyer: {req.buyerId} · Qty: {req.quantity} · Payment: {req.paymentMode}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(req.createdAt).toLocaleDateString()}</p>
                     </div>
                     <div className="text-right">
                       <span className="text-lg font-bold text-primary">₹{req.totalPrice}</span>
-                      <span className={`ml-2 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        req.status === "Approved" ? "bg-primary/10 text-primary" :
-                        req.status === "Rejected" ? "bg-destructive/10 text-destructive" :
-                        req.status === "Completed" ? "bg-primary/10 text-primary" :
-                        "bg-accent/10 text-accent-foreground"
-                      }`}>{req.status}</span>
                     </div>
                   </div>
-                  {req.status === "Pending" && (
-                    <div className="mt-3 flex gap-2">
-                      <button onClick={() => updatePurchaseRequestStatus(req.id, "Approved")}
-                        className="rounded-lg bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground">Approve</button>
-                      <button onClick={() => updatePurchaseRequestStatus(req.id, "Rejected")}
-                        className="rounded-lg bg-destructive px-4 py-1.5 text-xs font-semibold text-destructive-foreground">Reject</button>
-                      <Link to={`/chat/${req.buyerId}/${req.productId}`}
-                        className="rounded-lg bg-secondary px-4 py-1.5 text-xs font-semibold text-secondary-foreground hover:bg-secondary/80">Chat</Link>
-                    </div>
-                  )}
-                  {req.status === "Approved" && (
-                    <div className="mt-3">
-                      <button onClick={() => updatePurchaseRequestStatus(req.id, "Completed")}
-                        className="rounded-lg bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground">Mark Completed</button>
-                    </div>
-                  )}
+                  <div className="mt-3 flex items-center gap-2 rounded-lg bg-primary/10 p-3">
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-primary">Order arrived from {req.buyerId}</span>
+                  </div>
+                  <Link to={`/chat/${req.buyerId}/${req.productId}`}
+                    className="mt-2 inline-block text-sm font-medium text-primary hover:underline">Chat with Buyer</Link>
                 </div>
               );
             })

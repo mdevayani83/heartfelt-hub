@@ -159,9 +159,9 @@ const ProductDetail = () => {
                   <span className="text-sm text-muted-foreground">Total</span>
                   <span className="text-lg font-bold text-primary">₹{Number(product.price) * quantity}</span>
                 </div>
-                <button onClick={handleRequest}
+                <button onClick={handleBuyNow}
                   className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90">
-                  Send Request
+                  Buy Now
                 </button>
               </div>
             </div>
