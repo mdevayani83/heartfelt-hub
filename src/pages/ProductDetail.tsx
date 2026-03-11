@@ -5,7 +5,7 @@ import { ArrowLeft, ShoppingBag, ShoppingCart, MessageCircle, Phone, Send } from
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { products, user, addToCart, createPurchaseRequest, getSellerContact } = useApp();
+  const { products, user, addToCart, createPurchaseRequest, placeOrder, getSellerContact } = useApp();
   const navigate = useNavigate();
   const product = products.find((p) => p.id === Number(id));
   const [showRequestForm, setShowRequestForm] = useState(false);
