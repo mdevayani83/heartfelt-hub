@@ -291,21 +291,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const placeOrder = (productId: number, quantity: number): Order => {
+  const placeOrder = (productId: number, quantity: number, paymentMode: "UPI" | "Cash on Delivery"): Order => {
     const product = products.find((p) => p.id === productId)!;
     const order: Order = {
       id: Date.now(),
       productId,
       buyerId: user?.username || "anonymous",
       sellerId: product.seller,
-      status: "Requested",
+      status: "Placed",
       paymentStatus: "Pending",
+      paymentMode,
       quantity,
       totalPrice: String(Number(product.price) * quantity),
       createdAt: new Date().toISOString(),
     };
     setOrders((prev) => [...prev, order]);
-    addNotification(product.seller, `New order for "${product.name}" from ${user?.username}`, "order");
+    addNotification(product.seller, `New order received for "${product.name}" from ${user?.username} — Payment: ${paymentMode}`, "order");
     return order;
   };
 
