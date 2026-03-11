@@ -5,7 +5,7 @@ import { Package, ShoppingBag, MessageCircle, Heart, Clock, CheckCircle, Truck, 
 
 const SellerDashboard = () => {
   const { user, products, orders, messages, donationRequests, purchaseRequests, updateOrderStatus, updateDonationStatus, updatePurchaseRequestStatus, editProduct, deleteProduct, markProductSold } = useApp();
-  const [tab, setTab] = useState<"products" | "requests" | "orders" | "messages" | "donations">("requests");
+  const [tab, setTab] = useState<"products" | "requests" | "orders" | "messages" | "donations">("orders");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<any>({});
 
