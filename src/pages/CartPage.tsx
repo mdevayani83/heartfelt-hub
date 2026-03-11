@@ -15,7 +15,7 @@ const CartPage = () => {
 
   const handleCheckout = () => {
     userCart.forEach((item) => {
-      createPurchaseRequest(item.productId, item.quantity, paymentMode);
+      placeOrder(item.productId, item.quantity, paymentMode);
     });
     clearCart();
     navigate("/buyer-dashboard");
