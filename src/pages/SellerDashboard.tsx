@@ -36,7 +36,7 @@ const SellerDashboard = () => {
   };
 
   const tabs = [
-    { key: "requests", label: "Buy Requests", icon: Send, count: myRequests.filter((r) => r.status === "Pending").length },
+    { key: "requests", label: "Orders Arrived", icon: Send, count: myRequests.length },
     { key: "orders", label: "Orders", icon: Package, count: myOrders.length },
     { key: "products", label: "Products", icon: ShoppingBag, count: myProducts.length },
     { key: "messages", label: "Messages", icon: MessageCircle, count: myMessages.length },
