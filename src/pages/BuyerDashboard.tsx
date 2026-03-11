@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
-import { ShoppingCart, Package, MessageCircle, Heart, Clock, CheckCircle, Truck, Box, Send, Smartphone, Banknote } from "lucide-react";
+import { ShoppingCart, Package, MessageCircle, Heart, Clock, CheckCircle, Truck, Box, Send } from "lucide-react";
 
 const statusIcons: Record<string, any> = {
   Requested: Clock, Confirmed: CheckCircle, Shipped: Truck, Delivered: Box,
