@@ -32,27 +32,29 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AppRoutes = () => (
-  <Layout>
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/seller" element={<ProtectedRoute><Seller /></ProtectedRoute>} />
-      <Route path="/buyer" element={<ProtectedRoute><Buyer /></ProtectedRoute>} />
-      <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
-      <Route path="/buy/:id" element={<ProtectedRoute><Buy /></ProtectedRoute>} />
-      <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
-      <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
-      <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
-      <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
-      <Route path="/seller-dashboard" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
-      <Route path="/donations" element={<ProtectedRoute><DonationsPage /></ProtectedRoute>} />
-      <Route path="/chat/:recipientId/:productId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
-      <Route path="/payment/:orderId" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
-      <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  </Layout>
+  <AppProvider>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/seller" element={<ProtectedRoute><Seller /></ProtectedRoute>} />
+        <Route path="/buyer" element={<ProtectedRoute><Buyer /></ProtectedRoute>} />
+        <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
+        <Route path="/buy/:id" element={<ProtectedRoute><Buy /></ProtectedRoute>} />
+        <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+        <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+        <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
+        <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+        <Route path="/seller-dashboard" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
+        <Route path="/donations" element={<ProtectedRoute><DonationsPage /></ProtectedRoute>} />
+        <Route path="/chat/:recipientId/:productId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+        <Route path="/payment/:orderId" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Layout>
+  </AppProvider>
 );
 
 const App = () => (
