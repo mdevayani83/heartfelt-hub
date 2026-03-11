@@ -42,8 +42,9 @@ export interface Order {
   productId: number;
   buyerId: string;
   sellerId: string;
-  status: "Requested" | "Confirmed" | "Shipped" | "Delivered";
+  status: "Placed" | "Confirmed" | "Shipped" | "Delivered";
   paymentStatus: "Pending" | "Paid";
+  paymentMode: "UPI" | "Cash on Delivery";
   quantity: number;
   totalPrice: string;
   createdAt: string;
