@@ -126,7 +126,8 @@ const SellerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-display font-semibold text-foreground">{product?.name || "Unknown"}</h3>
-                      <p className="text-sm text-muted-foreground">Buyer: {order.buyerId} · #{order.id}</p>
+                      <p className="text-sm text-muted-foreground">Buyer: {order.buyerId} · #{order.id} · Qty: {order.quantity}</p>
+                      <p className="text-xs text-muted-foreground">Payment: {order.paymentMode} · {new Date(order.createdAt).toLocaleDateString()}</p>
                     </div>
                     <span className="text-lg font-bold text-primary">₹{order.totalPrice}</span>
                   </div>

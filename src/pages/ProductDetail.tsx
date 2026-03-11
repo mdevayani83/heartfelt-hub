@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
-import { ArrowLeft, ShoppingBag, ShoppingCart, MessageCircle, Phone, Send } from "lucide-react";
+import { ArrowLeft, ShoppingBag, ShoppingCart, MessageCircle, Phone, Banknote, Smartphone, CheckCircle } from "lucide-react";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { products, user, addToCart, createPurchaseRequest, getSellerContact } = useApp();
+  const { products, user, addToCart, placeOrder, getSellerContact } = useApp();
   const navigate = useNavigate();
   const product = products.find((p) => p.id === Number(id));
-  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [showBuyNow, setShowBuyNow] = useState(false);
   const [paymentMode, setPaymentMode] = useState<"UPI" | "Cash on Delivery">("Cash on Delivery");
   const [quantity, setQuantity] = useState(1);
-  const [requested, setRequested] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   if (!product) {
     return (
@@ -41,10 +41,10 @@ const ProductDetail = () => {
     navigate("/cart");
   };
 
-  const handleRequest = () => {
-    createPurchaseRequest(product.id, quantity, paymentMode);
-    setRequested(true);
-    setShowRequestForm(false);
+  const handleBuyNow = () => {
+    placeOrder(product.id, quantity, paymentMode);
+    setOrderPlaced(true);
+    setShowBuyNow(false);
   };
 
   return (
@@ -83,32 +83,31 @@ const ProductDetail = () => {
             ))}
           </div>
 
-          {/* Seller contact - shown only after approval */}
+          {/* Seller contact */}
           {sellerContact && (
             <div className="mt-4 flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
               <Phone className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium text-foreground">Seller Contact: {sellerContact}</p>
-                <a
-                  href={`https://wa.me/91${sellerContact}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-1 inline-block text-xs font-semibold text-primary hover:underline"
-                >
+                <a href={`https://wa.me/91${sellerContact}`} target="_blank" rel="noopener noreferrer"
+                  className="mt-1 inline-block text-xs font-semibold text-primary hover:underline">
                   💬 Chat on WhatsApp
                 </a>
               </div>
             </div>
           )}
 
-          {/* Request success */}
-          {requested && (
-            <div className="mt-4 rounded-lg bg-primary/10 p-4 text-sm text-primary">
-              ✅ Purchase request sent! The seller will review it. You can track it in your dashboard.
+          {/* Order placed success */}
+          {orderPlaced && (
+            <div className="mt-4 flex items-center gap-2 rounded-lg bg-primary/10 p-4 animate-fade-in">
+              <CheckCircle className="h-5 w-5 text-primary" />
+              <span className="text-sm font-semibold text-primary">
+                Order placed successfully! Payment mode: {paymentMode}. Track it in your dashboard.
+              </span>
             </div>
           )}
 
-          {!product.isSold && (
+          {!product.isSold && !orderPlaced && (
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               {product.isDonation ? (
                 <Link to="/donations"
@@ -121,9 +120,9 @@ const ProductDetail = () => {
                     className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]">
                     <ShoppingCart className="h-4 w-4" /> Add to Cart
                   </button>
-                  <button onClick={() => setShowRequestForm(!showRequestForm)}
+                  <button onClick={() => setShowBuyNow(!showBuyNow)}
                     className="flex-1 rounded-lg border border-primary bg-primary/5 px-4 py-3 text-center text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground">
-                    <Send className="mr-1 inline h-4 w-4" /> Request to Buy
+                    Buy Now
                   </button>
                 </>
               )}
@@ -136,32 +135,35 @@ const ProductDetail = () => {
             </div>
           )}
 
-          {/* Request to Buy form */}
-          {showRequestForm && !product.isSold && (
+          {/* Buy Now form */}
+          {showBuyNow && !product.isSold && (
             <div className="mt-4 rounded-xl border border-border bg-secondary/50 p-4 animate-fade-in">
-              <h3 className="mb-3 font-display text-lg font-semibold text-foreground">Purchase Request</h3>
+              <h3 className="mb-3 font-display text-lg font-semibold text-foreground">Select Payment Method</h3>
               <div className="space-y-3">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-foreground">Quantity</label>
                   <input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value))}
                     className="w-full rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
                 </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">Payment Mode</label>
-                  <select value={paymentMode} onChange={(e) => setPaymentMode(e.target.value as any)}
-                    className="w-full rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-                    <option value="Cash on Delivery">Cash on Delivery (In-person)</option>
-                    <option value="UPI">UPI</option>
-                  </select>
-                </div>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${paymentMode === "Cash on Delivery" ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}>
+                  <input type="radio" name="buyNowPay" value="Cash on Delivery" checked={paymentMode === "Cash on Delivery"} onChange={() => setPaymentMode("Cash on Delivery")} className="accent-primary" />
+                  <Banknote className="h-5 w-5 text-primary" />
+                  <span className="font-medium text-foreground">Cash on Delivery (In-person)</span>
+                </label>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${paymentMode === "UPI" ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}>
+                  <input type="radio" name="buyNowPay" value="UPI" checked={paymentMode === "UPI"} onChange={() => setPaymentMode("UPI")} className="accent-primary" />
+                  <Smartphone className="h-5 w-5 text-primary" />
+                  <span className="font-medium text-foreground">Pay via UPI</span>
+                </label>
                 <div className="flex items-center justify-between rounded-lg bg-card p-3">
                   <span className="text-sm text-muted-foreground">Total</span>
                   <span className="text-lg font-bold text-primary">₹{Number(product.price) * quantity}</span>
                 </div>
-                <button onClick={handleRequest}
+                <button onClick={handleBuyNow}
                   className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90">
-                  Send Request
+                  Place Order
                 </button>
+                <p className="text-center text-xs text-muted-foreground">Payment will be made in person ({paymentMode})</p>
               </div>
             </div>
           )}
